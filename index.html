@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ferramentas de Segurança Ofensiva</title>
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        body.dark-mode {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .icon-large {
+            font-size: 4rem;
+            margin-top: 20px;
+            color: #2196f3;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: -0.75rem;
+            margin-right: -0.75rem;
+        }
+
+        .col {
+            display: flex;
+            flex-direction: column;
+            padding: 0.75rem;
+        }
+
+        .card.dark-card {
+            background-color: #111;
+            color: #fff;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .card-content {
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .card-action {
+            border-top: 1px solid #333;
+        }
+
+        .card-action a {
+            color: #2196f3 !important;
+        }
+
+        .category-filter {
+            margin-top: 30px;
+        }
+
+        .input-field select {
+            background-color: #000 !important;
+            color: #fff !important;
+            border: none !important;
+        }
+
+        .input-field label {
+            color: #fff !important;
+        }
+
+        .dropdown-content {
+            background-color: #000 !important;
+        }
+
+        .dropdown-content li>span {
+            color: #2196f3 !important;
+        }
+
+        .dropdown-content li:hover {
+            background-color: #111 !important;
+        }
+
+        .select-wrapper input.select-dropdown {
+            color: #fff !important;
+            border-bottom: 1px solid #2196f3 !important;
+        }
+
+        .select-wrapper input.select-dropdown:focus {
+            border-bottom: 1px solid #2196f3 !important;
+            box-shadow: 0 1px 0 0 #2196f3 !important;
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body class="dark-mode">
+    <div class="container center-align">
+        <i class="material-icons icon-large">shield</i>
+        <h1>Ferramentas de Segurança Ofensiva</h1>
+        <p>Explore recursos essenciais para reconhecimento passivo, enumeração, OSINT e exploração de vulnerabilidades.
+        </p>
+    </div>
+
+    <div class="container category-filter">
+        <div class="input-field">
+            <select id="categoria">
+                <option value="all" selected>Todas as Categorias</option>
+                <option value="recon">Reconhecimento Passivo</option>
+                <option value="whois">Consulta WHOIS / IP</option>
+                <option value="osint">OSINT</option>
+                <option value="exploit">Exploração</option>
+            </select>
+            <label>Filtrar por categoria</label>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row" id="card-container">
+            <!-- Cards renderizados dinamicamente -->
+        </div>
+    </div>
+
+    <footer class="container">
+        <p>&copy; <span id="ano-atual"></span> jeanrafaellourenco. Alguns direitos reservados.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            M.FormSelect.init(document.querySelectorAll('select'));
+        });
+
+        document.getElementById('ano-atual').textContent = new Date().getFullYear();
+
+        const ferramentas = [
+            { nome: "Shodan", descricao: "Busca por dispositivos conectados à internet.", icone: "language", url: "https://www.shodan.io/", categoria: "recon" },
+            { nome: "DNSDumpster", descricao: "Enumeração de registros DNS e subdomínios.", icone: "dns", url: "https://dnsdumpster.com/", categoria: "recon" },
+            { nome: "crt.sh", descricao: "Consulta de certificados SSL/TLS.", icone: "vpn_lock", url: "https://crt.sh/", categoria: "recon" },
+            { nome: "OSINT.SH", descricao: "Agrega consultas OSINT sobre domínios e IPs.", icone: "search", url: "https://osint.sh/", categoria: "osint" },
+            { nome: "VirusTotal", descricao: "Análise de arquivos e URLs maliciosos.", icone: "security", url: "https://www.virustotal.com/gui/", categoria: "osint" },
+            { nome: "Subdomain Finder", descricao: "Busca por subdomínios expostos.", icone: "device_hub", url: "https://subdomainfinder.c99.nl/", categoria: "recon" },
+            { nome: "AbuseIPDB", descricao: "Consulta reputação de endereços IP.", icone: "report", url: "https://www.abuseipdb.com/", categoria: "whois" },
+            { nome: "Wayback Machine", descricao: "Arquivos históricos de sites.", icone: "history", url: "http://web.archive.org/", categoria: "recon" },
+            { nome: "Wayback URLs", descricao: "Extrai URLs arquivadas por domínio.", icone: "link", url: "https://web.archive.org/cdx/search/cdx?url=testphp.vulnweb.com/*&output=txt&fl=original&collapse=urlkey&page=/", categoria: "recon" },
+            { nome: "SecurityTrails", descricao: "Consulta avançada de domínios e infraestrutura.", icone: "layers", url: "https://securitytrails.com/", categoria: "osint" },
+            { nome: "Censys", descricao: "Busca por certificados, hosts e serviços.", icone: "wifi", url: "https://search.censys.io", categoria: "recon" },
+            { nome: "ARIN", descricao: "Consulta WHOIS para IPs na América do Norte.", icone: "map", url: "https://search.arin.net", categoria: "whois" },
+            { nome: "IANA", descricao: "Informações sobre IPs e domínios raiz.", icone: "account_balance", url: "https://www.iana.org/", categoria: "whois" },
+            { nome: "Registro.br", descricao: "Consulta WHOIS de domínios .br.", icone: "language", url: "https://registro.br/tecnologia/ferramentas/whois?search=example.com", categoria: "whois" },
+            { nome: "RIPE DB", descricao: "Consulta recursos de IPs e ASN europeus.", icone: "search", url: "https://apps.db.ripe.net/db-web-ui/query", categoria: "whois" },
+            { nome: "Exploit-DB", descricao: "Repositório de exploits e PoCs.", icone: "bug_report", url: "https://www.exploit-db.com/", categoria: "exploit" },
+            { nome: "Google Hacking DB", descricao: "Dorks para busca de vulnerabilidades.", icone: "search", url: "https://www.exploit-db.com/google-hacking-database", categoria: "exploit" }
+        ];
+
+        const container = document.getElementById('card-container');
+        const filtro = document.getElementById('categoria');
+
+        function renderizarCards(filtroCategoria) {
+            container.innerHTML = '';
+            const lista = ferramentas.filter(f => filtroCategoria === 'all' || f.categoria === filtroCategoria);
+            lista.forEach(ferramenta => {
+                const col = document.createElement('div');
+                col.className = 'col s12 m6 l4';
+                col.innerHTML = `
+          <div class="card dark-card">
+            <div class="card-content white-text">
+              <span class="card-title">${ferramenta.nome}</span>
+              <p>${ferramenta.descricao}</p>
+            </div>
+            <div class="card-action">
+              <a href="${ferramenta.url}" target="_blank"><i class="material-icons left">${ferramenta.icone}</i>Acessar</a>
+            </div>
+          </div>`;
+                container.appendChild(col);
+            });
+            // Corrigir layout caso número ímpar de cards
+            if (lista.length % 3 === 1) {
+                const filler = document.createElement('div');
+                filler.className = 'col s12 m6 l4';
+                filler.style.visibility = 'hidden';
+                container.appendChild(filler);
+                container.appendChild(filler.cloneNode());
+            } else if (lista.length % 3 === 2) {
+                const filler = document.createElement('div');
+                filler.className = 'col s12 m6 l4';
+                filler.style.visibility = 'hidden';
+                container.appendChild(filler);
+            }
+        }
+
+        filtro.addEventListener('change', () => renderizarCards(filtro.value));
+
+        renderizarCards('all');
+    </script>
+</body>
+
+</html>
